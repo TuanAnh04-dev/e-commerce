@@ -2,7 +2,10 @@
 
 import 'package:e_commerce/Authenticaiton/Model/Product.dart';
 import 'package:e_commerce/Authenticaiton/fetchCategory.dart';
+import 'package:e_commerce/Home/CartPage.dart';
 import 'package:e_commerce/Home/ProductDetail.dart';
+import 'package:e_commerce/Provider/CartProvider.dart';
+import 'package:e_commerce/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
@@ -11,6 +14,7 @@ import 'package:e_commerce/Util/userAuth.dart' as global;
 import 'package:group_button/group_button.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 
 import '../Authenticaiton/fetchProduct.dart';
 
@@ -39,7 +43,7 @@ class Homepage extends StatefulWidget {
 Future? _getCates;
 Future? _getProduct;
 
-class _HomepageState extends State<Homepage> {
+class _HomepageState extends State<Homepage> with WidgetsBindingObserver {
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -53,7 +57,19 @@ class _HomepageState extends State<Homepage> {
     final _getCates = fetchCategoryPro();
     final _getProduct = fetchProduct();
     _initPackageInfo();
+
+    //set up provider
+    WidgetsBinding.instance.addObserver(this);
+    // Create instance of DI
+    getIt.isReady<CartProvider>().then((_) => getIt<CartProvider>().addListener(update));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    getIt<CartProvider>().removeListener(update);
+    super.dispose();
   }
 
   Future<void> _initPackageInfo() async {
@@ -65,16 +81,16 @@ class _HomepageState extends State<Homepage> {
 
   List<bool> _selected = [false];
 
+  void update() => setState(() {});
   @override
   Widget build(BuildContext context) {
     var widthScreen = MediaQuery.of(context).size.width;
     var heightScreen = MediaQuery.of(context).size.height;
-
-    var secret = GetStorage();
     var userAuth = global.userAuth;
-
     var curencyFormat = NumberFormat.currency(locale: 'en_US', symbol: "\$");
-    // print(_packageInfo.version);
+    List<Products> listPro = getIt<CartProvider>().getListProInCart;
+    int quantity = listPro.length;
+
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -113,18 +129,50 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ],
                     ),
-                    Wrap(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Icon(
                           Icons.search,
                           size: 40,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15, right: 10),
-                          child: Icon(
-                            Icons.notifications,
-                            size: 40,
-                          ),
+                        Stack(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(left: 15, right: 10),
+                              child: InkWell(
+                                onTap: () => Get.to(Cart()),
+                                child: Icon(
+                                  Icons.shopping_bag_outlined,
+                                  size: 40,
+                                ),
+                              ),
+                            ),
+                            // if (quantity != 0)
+                            Positioned(
+                              top: 5,
+                              left: 10,
+                              child: Container(
+                                padding: const EdgeInsets.all(2.5),
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.red,
+                                ),
+                                child: ChangeNotifierProvider<CartProvider>(
+                                  create: (_) => CartProvider(),
+                                  builder: (context, child) {
+                                    List<Products> lst = context.watch<CartProvider>().getListProInCart;
+                                    var num = lst.length;
+
+                                    return Text(
+                                      getIt.get<CartProvider>().getQuantity.toString(),
+                                      style: TextStyle(color: Colors.white),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         )
                       ],
                     ),
@@ -264,7 +312,16 @@ class _HomepageState extends State<Homepage> {
                               return Padding(
                                 padding: const EdgeInsets.only(right: 10, left: 10),
                                 child: InkWell(
-                                  onTap: () => Get.to(() => ProductDetail(), arguments: [highlight[index], sameCategoryProduct]),
+                                  onTap: () async {
+                                    var check = await Get.to(
+                                      ProductDetail(),
+                                      arguments: [highlight[index], sameCategoryProduct],
+                                    );
+                                    if (check == true) {
+                                      setState(() {});
+                                      print('object');
+                                    }
+                                  },
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),

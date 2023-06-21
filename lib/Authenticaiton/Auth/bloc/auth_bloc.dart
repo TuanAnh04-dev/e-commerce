@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:e_commerce/Authenticaiton/fetchUser.dart';
 import 'package:equatable/equatable.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:meta/meta.dart';
 
 import '../../AuthRepository.dart';
 import '../../Model/User.dart';

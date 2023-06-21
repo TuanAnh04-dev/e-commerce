@@ -28,11 +28,17 @@ class AuthRepository {
           'password': password,
         },
       );
-      print(response.statusCode);
+      // john@mail.com
+      // changeme
+      // print('Repo: ${username}');
+      // print('Repo: ${password}');
+      // print(response.statusCode);
+      print(response.body);
       if (response.statusCode == 201) {
         var token = json.decode(response.body);
 
         global.token = token['access_token'];
+        // print(global.token);
         Future.delayed(Duration(seconds: 1), () => _controller.add(AuthStatus.authenticated));
       } else {
         Future.delayed(Duration(seconds: 1), () => _controller.add(AuthStatus.unauthenticated));

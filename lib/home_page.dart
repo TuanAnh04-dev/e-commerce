@@ -67,7 +67,6 @@ class _HomeState extends State<Home> {
           FeedPage(),
           Placeholder(),
           Placeholder(),
-          Placeholder(),
         ],
       ),
       bottomNavigationBar: Container(

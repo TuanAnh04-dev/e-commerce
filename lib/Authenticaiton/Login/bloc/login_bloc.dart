@@ -51,8 +51,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         username: state.username.value,
         password: state.password.value,
       );
-      global.username = state.username.value;
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
+      global.username = state.username.value;
 
       // print('Đã thay đổi login state');
     } catch (_) {

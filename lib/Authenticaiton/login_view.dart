@@ -1,8 +1,9 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unnecessary_brace_in_string_interps, must_be_immutable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:get/get.dart';
 import 'Login/bloc/login_bloc.dart';
 import 'Login/bloc/login_state.dart';
 
@@ -40,7 +41,7 @@ class LoginView extends StatelessWidget {
                   Text(
                     "Forget password ???",
                     style: TextStyle(color: Colors.blue[600]),
-                  )
+                  ),
                 ],
               ),
               Padding(
@@ -77,6 +78,10 @@ class _Logo extends StatelessWidget {
 }
 
 class _UsernameInput extends StatelessWidget {
+  putUN(String data, BuildContext context) {
+    context.read<LoginBloc>().add(LoginUsernameChanged(username: data));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
@@ -85,8 +90,15 @@ class _UsernameInput extends StatelessWidget {
         return SizedBox(
           width: MediaQuery.of(context).size.width * 0.85,
           child: TextField(
+            // controller: unController,
             key: Key('loginForm_usernameInput_textField'),
-            onChanged: (username) => context.read<LoginBloc>().add(LoginUsernameChanged(username: username)),
+            onChanged: (username) {
+              // print('UI :${username}');
+              // context.read<LoginBloc>().add(LoginUsernameChanged(username: username));
+              putUN(username, context);
+            },
+            //john@mail.com
+            //changeme
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -115,14 +127,27 @@ class _UsernameInput extends StatelessWidget {
 class _PasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    putPW(String data, BuildContext context) {
+      context.read<LoginBloc>().add(LoginPasswordChanged(password: data));
+      print('====================================putPW');
+    }
+
+    // TextEditingController pwController = TextEditingController();
+
     return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (previous, current) => previous.password != current.password,
+      // buildWhen: (previous, current) => previous.password != current.password,
       builder: (context, state) {
         return SizedBox(
           width: MediaQuery.of(context).size.width * 0.85,
           child: TextField(
+            // controller: pwController,
             key: const Key('loginForm_passwordInput_textField'),
-            onChanged: (password) => context.read<LoginBloc>().add(LoginPasswordChanged(password: password)),
+            onChanged: (password) {
+              // print('UI :${password}');
+              // pwController.text = password;
+              context.read<LoginBloc>().add(LoginPasswordChanged(password: password));
+              putPW(password, context);
+            },
             obscureText: true,
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
@@ -152,6 +177,10 @@ class _PasswordInput extends StatelessWidget {
 class _LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    pressLogin(BuildContext context) {
+      context.read<LoginBloc>().add(LoginSubmitted());
+    }
+
     return BlocBuilder<LoginBloc, LoginState>(
       buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
@@ -165,7 +194,7 @@ class _LoginButton extends StatelessWidget {
                 key: const Key('loginForm_continue_raisedButton'),
                 onPressed: state.status.isValidated
                     ? () {
-                        context.read<LoginBloc>().add(LoginSubmitted());
+                        pressLogin(context);
                         // print('Submit');
                       }
                     : null,
@@ -178,3 +207,6 @@ class _LoginButton extends StatelessWidget {
     );
   }
 }
+
+// john@mail.com
+// changeme

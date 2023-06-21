@@ -1,18 +1,23 @@
+import 'dart:ui';
+
+import 'package:e_commerce/Provider/CartProvider.dart';
 import 'package:e_commerce/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'Authenticaiton/Auth/bloc/auth_bloc.dart';
 import 'Authenticaiton/AuthRepository.dart';
 import 'Authenticaiton/UserRepository.dart';
 import 'Authenticaiton/login_page.dart';
-import 'Home/HomePage.dart';
 import 'home_page.dart';
-import 'Util/appInfo.dart' as appInfo;
+
+GetIt getIt = GetIt.instance;
 
 void main() {
+  getIt.registerSingleton<CartProvider>(CartProvider(), signalsReady: true);
   runApp(MyApp(
     authRepository: AuthRepository(),
     userRepository: UserRepository(),

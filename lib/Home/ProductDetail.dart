@@ -1,9 +1,14 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:e_commerce/Authenticaiton/Model/Product.dart';
+import 'package:e_commerce/Provider/CartProvider.dart';
+import 'package:e_commerce/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+import 'CartPage.dart';
 
 class ProductDetail extends StatefulWidget {
   const ProductDetail({super.key});
@@ -13,6 +18,20 @@ class ProductDetail extends StatefulWidget {
 }
 
 class _ProductDetailState extends State<ProductDetail> {
+  @override
+  void initState() {
+    getIt.isReady<CartProvider>().then((_) => getIt<CartProvider>().addListener(update));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    getIt<CartProvider>().removeListener(update);
+    super.dispose();
+  }
+
+  void update() => setState(() {});
+
   var product = Get.arguments[0];
   var sameCate = Get.arguments[1];
   bool isReadMore = false;
@@ -24,8 +43,46 @@ class _ProductDetailState extends State<ProductDetail> {
 
     // print(sameCate);
 
+    List<Products> listPro = getIt.get<CartProvider>().getListProInCart;
+    int quantity = listPro.length;
+
     var heightScreen = MediaQuery.of(context).size.height;
     var widthScreen = MediaQuery.of(context).size.width;
+
+    Future<void> _showAlert(BuildContext context) async {
+      return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.of(context).pop(true);
+          });
+          return Dialog(
+            alignment: Alignment.center,
+            elevation: 0,
+            backgroundColor: Color.fromARGB(255, 255, 255, 255),
+            child: Container(
+              padding: const EdgeInsets.all(0.0),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                // borderRadius: BorderRadius.all(
+                //   Radius.circular(20.0),
+                // ),
+              ),
+              width: 20,
+              height: 50,
+              child: Center(
+                child: Column(
+                  children: const [
+                    Icon(Icons.check),
+                    Text('Đã thêm vào giỏ hàng'),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -37,30 +94,55 @@ class _ProductDetailState extends State<ProductDetail> {
           elevation: 0,
           backgroundColor: Colors.transparent,
           leading: InkWell(
-            onTap: () => Get.back(),
+            onTap: () => Get.back(result: true),
             child: const Icon(
               Icons.arrow_back_ios,
               color: Colors.grey,
             ),
           ),
-          actions: const [
-            Icon(
-              Icons.share,
-              color: Colors.grey,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Icon(
-                Icons.shopping_cart,
-                color: Colors.grey,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: Icon(
-                Icons.more_vert,
-                color: Colors.grey,
-              ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Icon(
+                  Icons.share,
+                  color: Colors.grey,
+                ),
+                InkWell(
+                  onTap: () => Get.to(const Cart()),
+                  child: Stack(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15.0),
+                        child: const Icon(
+                          Icons.shopping_cart,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Positioned(
+                        top: 5,
+                        left: 5,
+                        child: Container(
+                          padding: const EdgeInsets.all(2.5),
+                          decoration: const BoxDecoration(
+                            // border: Border.all(width: 10),
+                            shape: BoxShape.circle,
+                            color: Colors.red,
+                          ),
+                          child: Text(quantity.toString()),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 10.0),
+                  child: Icon(
+                    Icons.more_vert,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -68,6 +150,7 @@ class _ProductDetailState extends State<ProductDetail> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              //Hình ảnh
               Container(
                 color: Colors.amber,
                 height: heightScreen * 0.5,
@@ -82,13 +165,16 @@ class _ProductDetailState extends State<ProductDetail> {
                       .toList(),
                 ),
               ),
+
+              //Tên
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       product.title.toString(),
+                      style: const TextStyle(fontSize: 16),
                     ),
                     const Icon(
                       Icons.discount_rounded,
@@ -97,6 +183,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   ],
                 ),
               ),
+
               //Giá
               Padding(
                 padding: const EdgeInsets.only(top: 5, right: 10, left: 10),
@@ -177,6 +264,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   ],
                 ),
               ),
+
               //deivde
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -251,6 +339,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   ],
                 ),
               ),
+
               //devide
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -260,6 +349,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   color: Colors.grey[200],
                 ),
               ),
+
               //Sản phẩm cùng loại
               Padding(
                 padding: const EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
@@ -306,7 +396,6 @@ class _ProductDetailState extends State<ProductDetail> {
                         height: heightScreen * 0.25,
                         color: Colors.grey[200],
                         child: Column(
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             //Thumbnail
@@ -451,6 +540,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
               ),
 
+              //Mô tả sản phẩm
               buildText(product.description),
               //deivde nhỏ
               Padding(
@@ -587,22 +677,29 @@ class _ProductDetailState extends State<ProductDetail> {
                         ],
                       ),
                     ),
-                    Container(
-                      height: heightScreen * 0.06,
-                      width: widthScreen * 0.25,
-                      color: Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.local_grocery_store_rounded,
-                            color: Colors.red,
-                          ),
-                          Text(
-                            'Thêm vào giỏ hàng',
-                            style: TextStyle(fontSize: 10),
-                          )
-                        ],
+                    InkWell(
+                      onTap: () {
+                        getIt<CartProvider>().add(product);
+                        update();
+                        _showAlert(context);
+                      },
+                      child: Container(
+                        height: heightScreen * 0.06,
+                        width: widthScreen * 0.25,
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.local_grocery_store_rounded,
+                              color: Colors.red,
+                            ),
+                            Text(
+                              'Thêm vào giỏ hàng',
+                              style: TextStyle(fontSize: 10),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ],
