@@ -1,14 +1,18 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_brace_in_string_interps, must_be_immutable
 
+import 'package:auto_route/auto_route.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
-import 'package:get/get.dart';
 import 'Login/bloc/login_bloc.dart';
 import 'Login/bloc/login_state.dart';
 
+@RoutePage()
 class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+  const LoginView({super.key, this.onLoginresult});
+
+  final void Function(bool isLoggedIn)? onLoginresult;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +189,7 @@ class _LoginButton extends StatelessWidget {
       buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
         return state.status.isSubmissionInProgress
-            ? const CircularProgressIndicator()
+            ? CircularProgressIndicator()
             : ElevatedButton(
                 style: TextButton.styleFrom(
                     backgroundColor: Color.fromRGBO(21, 115, 254, 1),
@@ -195,6 +199,7 @@ class _LoginButton extends StatelessWidget {
                 onPressed: state.status.isValidated
                     ? () {
                         pressLogin(context);
+
                         // print('Submit');
                       }
                     : null,

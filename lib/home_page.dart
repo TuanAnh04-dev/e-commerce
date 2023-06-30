@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:e_commerce/Home/FeedPage.dart';
 import 'package:e_commerce/Home/HomePage.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,21 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
-class Home_Route extends StatelessWidget {
-  const Home_Route({super.key});
+// class Home_Route extends StatelessWidget {
+//   const Home_Route({super.key});
 
-  // const Home_Route({super.key});
+//   const Home_Route({super.key});
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => const Home_Route());
-  }
+//   static Route route() {
+//     return MaterialPageRoute<void>(builder: (_) => const Home_Route());
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return const Home();
-  }
-}
-
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Home();
+//   }
+// }
+@RoutePage()
 class Home extends StatefulWidget {
   const Home({super.key});
 

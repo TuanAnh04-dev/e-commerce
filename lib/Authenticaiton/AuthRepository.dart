@@ -33,7 +33,7 @@ class AuthRepository {
       // print('Repo: ${username}');
       // print('Repo: ${password}');
       // print(response.statusCode);
-      print(response.body);
+      // print(response.body);
       if (response.statusCode == 201) {
         var token = json.decode(response.body);
 

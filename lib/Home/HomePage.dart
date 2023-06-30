@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:auto_route/auto_route.dart';
 import 'package:e_commerce/Authenticaiton/Model/Product.dart';
 import 'package:e_commerce/Authenticaiton/fetchCategory.dart';
 import 'package:e_commerce/Home/CartPage.dart';
@@ -9,7 +10,6 @@ import 'package:e_commerce/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:e_commerce/Util/userAuth.dart' as global;
 import 'package:group_button/group_button.dart';
 import 'package:intl/intl.dart';
@@ -18,21 +18,22 @@ import 'package:provider/provider.dart';
 
 import '../Authenticaiton/fetchProduct.dart';
 
-class HomePage_Route extends StatelessWidget {
-  const HomePage_Route({super.key});
+// class HomePage_Route extends StatelessWidget {
+//   const HomePage_Route({super.key});
 
-  // const HomePage_Route({super.key});
+//   // const HomePage_Route({super.key});
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => const HomePage_Route());
-  }
+//   static Route route() {
+//     return MaterialPageRoute<void>(builder: (_) => const HomePage_Route());
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return const Homepage();
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Homepage();
+//   }
+// }
 
+@RoutePage()
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
@@ -60,7 +61,7 @@ class _HomepageState extends State<Homepage> with WidgetsBindingObserver {
 
     //set up provider
     WidgetsBinding.instance.addObserver(this);
-    // Create instance of DI
+    // Create instance of DI (get_it)
     getIt.isReady<CartProvider>().then((_) => getIt<CartProvider>().addListener(update));
     super.initState();
   }
@@ -318,8 +319,7 @@ class _HomepageState extends State<Homepage> with WidgetsBindingObserver {
                                       arguments: [highlight[index], sameCategoryProduct],
                                     );
                                     if (check == true) {
-                                      setState(() {});
-                                      print('object');
+                                      update();
                                     }
                                   },
                                   child: Container(
